@@ -1,0 +1,13 @@
+/build/
+/.venv/
+/.cache/
+/.pytest_cache/
+/.ruff_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+/dist/
+/CMakeUserPresets.json
+/compile_commands.json
+/results/
+/.hypothesis/
