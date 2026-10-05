@@ -1,0 +1,5 @@
+name: sage
+channels:
+  - conda-forge
+dependencies:
+  - sage=10.9

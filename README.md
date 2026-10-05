@@ -58,6 +58,22 @@ Python currently has no native binding; that comes in a later roadmap stage.
 Python dependency ranges are not a lockfile; freeze an environment for published
 benchmark results. SageMath is a separate runtime, not a pip dependency.
 
+## Sage environment
+
+SageMath is used only to generate and cross-check constants such as Montgomery
+parameters and roots of unity. The generated vectors are committed under
+tests/vectors/, so building, testing and CI do not need Sage.
+
+The Sage version is pinned in `environment.yml` and installed from conda-forge with
+[micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html):
+
+```bash
+micromamba create -f environment.yml
+micromamba run -n sage sage --version
+```
+
+Run Sage scripts with `micromamba run -n sage sage scripts/<name>.sage`.
+
 ## Layout
 
 ```text
@@ -70,6 +86,7 @@ python/tacit_ref/    Independent Python reference models
 python/tests/          Reference and property tests
 scripts/               Future Sage parameter generation
 cmake/                 Dependencies and target options
+environment.yml        Pinned Sage environment (conda-forge)
 docs/                  Roadmap and P0 checklist
 .devcontainer/         Debian development image
 .github/workflows/     GCC/Clang and Python checks

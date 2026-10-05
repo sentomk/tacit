@@ -16,5 +16,6 @@ Use Sage to verify primality, modular identities and exact root order.
 Write reproducible JSON into tests/vectors/ and later consume the same vectors
 from Python and C++ tests. Do not manually copy constants between implementations.
 
-SageMath is not installed by the scaffold. Run the future script with
-`sage scripts/generate_constants.sage` in a separately prepared Sage environment.
+SageMath is not part of the pip dependencies. Create the pinned environment from
+`environment.yml` (see the main README), then run the future script with
+`micromamba run -n sage sage scripts/generate_constants.sage`.
