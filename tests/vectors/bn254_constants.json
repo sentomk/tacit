@@ -1,0 +1,82 @@
+{
+  "curve": "bn254",
+  "limb_bits": 64,
+  "curve_param_x": "0x44e992b44a6909f1",
+  "fields": {
+    "Fp": {
+      "role": "base field of the curve coordinates",
+      "source": "Ethereum alt_bn128 (EIP-196/197); also derived from curve parameter x",
+      "modulus": "0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47",
+      "bits": 254,
+      "limbs": 4,
+      "modulus_limbs": [
+        "0x3c208c16d87cfd47",
+        "0x97816a916871ca8d",
+        "0xb85045b68181585d",
+        "0x30644e72e131a029"
+      ],
+      "r_mod_p": "0xe0a77c19a07df2f666ea36f7879462c0a78eb28f5c70b3dd35d438dc58f0d9d",
+      "r2_mod_p": "0x6d89f71cab8351f47ab1eff0a417ff6b5e71911d44501fbf32cfc5b538afa89",
+      "n0": "0x87d20782e4866389",
+      "two_adicity": 1,
+      "odd_part": "0x183227397098d014dc2822db40c0ac2ecbc0b548b438e5469e10460b6c3e7ea3",
+      "nonresidue": 3,
+      "root_of_unity": "0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd46",
+      "two_adic_roots": [
+        "0x1",
+        "0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd46"
+      ]
+    },
+    "Fr": {
+      "role": "scalar field / circuit field",
+      "source": "Ethereum alt_bn128 (EIP-196/197); also derived from curve parameter x",
+      "modulus": "0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001",
+      "bits": 254,
+      "limbs": 4,
+      "modulus_limbs": [
+        "0x43e1f593f0000001",
+        "0x2833e84879b97091",
+        "0xb85045b68181585d",
+        "0x30644e72e131a029"
+      ],
+      "r_mod_p": "0xe0a77c19a07df2f666ea36f7879462e36fc76959f60cd29ac96341c4ffffffb",
+      "r2_mod_p": "0x216d0b17f4e44a58c49833d53bb808553fe3ab1e35c59e31bb8e645ae216da7",
+      "n0": "0xc2e1f593efffffff",
+      "two_adicity": 28,
+      "odd_part": "0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f",
+      "nonresidue": 5,
+      "root_of_unity": "0x2a3c09f0a58a7e8500e0a7eb8ef62abc402d111e41112ed49bd61b6e725b19f0",
+      "two_adic_roots": [
+        "0x1",
+        "0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000000",
+        "0x30644e72e131a029048b6e193fd841045cea24f6fd736bec231204708f703636",
+        "0x2b337de1c8c14f22ec9b9e2f96afef3652627366f8170a0a948dad4ac1bd5e80",
+        "0x21082ca216cbbf4e1c6e4f4594dd508c996dfbe1174efb98b11509c6e306460b",
+        "0x9c532c6306b93d29678200d47c0b2a99c18d51b838eeb1d3eed4c533bb512d0",
+        "0x1418144d5b080fcac24cdb7649bdadf246a6cb2426e324bedb94fb05118f023a",
+        "0x16e73dfdad310991df5ce19ce85943e01dcb5564b6f24c799d0e470cba9d1811",
+        "0x7b0c561a6148404f086204a9f36ffb0617942546750f230c893619174a57a76",
+        "0xf1ded1ef6e72f5bffc02c0edd9b0675e8302a41fc782d75893a7fa1470157ce",
+        "0x6fd19c17017a420ebbebc2bb08771e339ba79c0a8d2d7ab11f995e1bc2e5912",
+        "0x27a358499c5042bb4027fd7a5355d71b8c12c177494f0cad00a58f9769a2ee2",
+        "0x931d596de2fd10f01ddd073fd5a90a976f169c76f039bb91c4775720042d43a",
+        "0x6fab49b869ae62001deac878b2667bd31bf3e28e3a2d764aa49b8d9bbdd310",
+        "0x2d965651cdd9e4811f4e51b80ddca8a8b4a93ee17420aae6adaa01c2617c6e85",
+        "0x2d1ba66f5941dc91017171fa69ec2bd0022a2a2d4115a009a93458fd4e26ecfb",
+        "0xeeb2cb5981ed45649abebde081dcff16c8601de4347e7dd1628ba2daac43b7",
+        "0x1bf82deba7d74902c3708cc6e70e61f30512eca95655210e276e5858ce8f58e5",
+        "0x19ddbcaf3a8d46c15c0176fbb5b95e4dc57088ff13f4d1bd84c6bfa57dcdc0e0",
+        "0x2260e724844bca5251829353968e4915305258418357473a5c1d597f613f6cbd",
+        "0x26125da10a0ed06327508aba06d1e303ac616632dbed349f53422da953337857",
+        "0x1ded8980ae2bdd1a4222150e8598fc8c58f50577ca5a5ce3b2c87885fcd0b523",
+        "0x1ad92f46b1f8d9a7cda0ceb68be08215ec1a1f05359eebbba76dde56a219447e",
+        "0x210fe635ab4c74d6b7bcf70bc23a1395680c64022dd991fb54d4506ab80c59d",
+        "0xc9fabc7845d50d2852e2a0371c6441f145e0db82e8326961c25f1e3e32b045b",
+        "0x2a734ebb326341efa19b0361d9130cd47b26b7488dc6d26eeccd4f3eb878331a",
+        "0x1067569af1ff73b20113eff9b8d89d4a605b52b63d68f9ae1c79bd572f4e9212",
+        "0x49ae702b363ebe85f256a9f6dc6e364b4823532f6437da2034afc4580928c44",
+        "0x2a3c09f0a58a7e8500e0a7eb8ef62abc402d111e41112ed49bd61b6e725b19f0"
+      ]
+    }
+  }
+}
