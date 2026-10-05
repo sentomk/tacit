@@ -1,6 +1,6 @@
-# zk-snark
+# tacit
 
-C++20 zk-SNARK learning project with independent Python/Sage reference models.
+**tacit** is a C++20 zk-SNARK learning project with independent Python/Sage reference models.
 Current stage: **P0 infrastructure**. No cryptographic primitives are implemented.
 
 ## WSL quick start
@@ -10,11 +10,11 @@ Git and Python >= 3.11 with venv. Initial configuration needs network access
 to download pinned GoogleTest and Google Benchmark commits.
 
 ```bash
-cd ~/code/zk-snark
+cd ~/code/tacit
 cmake --preset debug
 cmake --build --preset debug --parallel 2
 ctest --preset debug
-./build/debug/examples/zk_snark_demo
+./build/debug/examples/tacit_demo
 ```
 
 ## Release and benchmark harness
@@ -24,7 +24,7 @@ cmake --preset release
 cmake --build --preset release --parallel 2
 ctest --preset release
 mkdir -p results
-./build/release/benchmarks/zk_snark_bench \
+./build/release/benchmarks/tacit_bench \
   --benchmark_out=results/harness.json --benchmark_out_format=json
 ```
 
@@ -48,11 +48,11 @@ switching compilers, for example `CXX=clang++ cmake --preset debug -B build/clan
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[dev]"
-python -c "import zk_snark_ref"
+python -c "import tacit_ref"
 ruff check python
 ```
 
-If .venv already exists, reuse it. Add independent models in python/zk_snark_ref/
+If .venv already exists, reuse it. Add independent models in python/tacit_ref/
 and tests in python/tests/. Run `python -m pytest` after adding the first tests.
 Python currently has no native binding; that comes in a later roadmap stage.
 Python dependency ranges are not a lockfile; freeze an environment for published
@@ -61,12 +61,12 @@ benchmark results. SageMath is a separate runtime, not a pip dependency.
 ## Layout
 
 ```text
-include/zk_snark/       Public C++ headers
+include/tacit/       Public C++ headers
 src/                   C++ implementation
 examples/              Executable examples
 tests/                 C++ tests and shared vectors
 benchmarks/            Google Benchmark cases
-python/zk_snark_ref/    Independent Python reference models
+python/tacit_ref/    Independent Python reference models
 python/tests/          Reference and property tests
 scripts/               Future Sage parameter generation
 cmake/                 Dependencies and target options

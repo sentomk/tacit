@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "zk-snark-ref"
+name = "tacit-ref"
 version = "0.1.0"
-description = "Reference models and experiments for the zk-snark learning project"
+description = "Reference models and experiments for the tacit learning project"
 requires-python = ">=3.11"
 dependencies = []
 

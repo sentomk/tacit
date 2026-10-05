@@ -1,4 +1,4 @@
-# C++ zk-SNARK 库 · 项目 Roadmap
+# tacit · 项目 Roadmap
 
 > 一个用现代 C++ 从零实现的 zk-SNARK 库，底层追求极致性能（编译期参数化、汇编快路径、CUDA 加速），上层落地一个金融场景应用：交易所储备金证明（Proof of Reserves）。
 

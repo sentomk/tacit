@@ -1,30 +1,30 @@
 cmake_minimum_required(VERSION 3.25)
-project(zk_snark VERSION 0.1.0 LANGUAGES CXX)
+project(tacit VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(CTest)
-option(ZK_SNARK_BUILD_EXAMPLES "Build examples" ON)
-option(ZK_SNARK_BUILD_BENCHMARKS "Build benchmark harness" OFF)
-option(ZK_SNARK_ENABLE_SANITIZERS "Enable ASan and UBSan" OFF)
+option(TACIT_BUILD_EXAMPLES "Build examples" ON)
+option(TACIT_BUILD_BENCHMARKS "Build benchmark harness" OFF)
+option(TACIT_ENABLE_SANITIZERS "Enable ASan and UBSan" OFF)
 
 include(cmake/ProjectOptions.cmake)
-add_library(zk_snark STATIC src/version.cpp)
-add_library(zk_snark::zk_snark ALIAS zk_snark)
-target_compile_features(zk_snark PUBLIC cxx_std_20)
-target_include_directories(zk_snark PUBLIC
+add_library(tacit STATIC src/version.cpp)
+add_library(tacit::tacit ALIAS tacit)
+target_compile_features(tacit PUBLIC cxx_std_20)
+target_include_directories(tacit PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>")
-target_compile_definitions(zk_snark PRIVATE
-    ZK_SNARK_VERSION="${PROJECT_VERSION}")
-zk_snark_configure_target(zk_snark)
+target_compile_definitions(tacit PRIVATE
+    TACIT_VERSION="${PROJECT_VERSION}")
+tacit_configure_target(tacit)
 
 include(cmake/Dependencies.cmake)
-if(ZK_SNARK_BUILD_EXAMPLES)
+if(TACIT_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
-if(ZK_SNARK_BUILD_BENCHMARKS)
+if(TACIT_BUILD_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif()

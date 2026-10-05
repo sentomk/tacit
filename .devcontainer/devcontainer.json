@@ -1,5 +1,5 @@
 {
-  "name": "zk-snark P0",
+  "name": "tacit",
   "build": {
     "dockerfile": "Dockerfile"
   },

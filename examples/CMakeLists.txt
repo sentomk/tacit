@@ -1,3 +1,3 @@
-add_executable(zk_snark_demo main.cpp)
-target_link_libraries(zk_snark_demo PRIVATE zk_snark::zk_snark)
-zk_snark_configure_target(zk_snark_demo)
+add_executable(tacit_demo main.cpp)
+target_link_libraries(tacit_demo PRIVATE tacit::tacit)
+tacit_configure_target(tacit_demo)

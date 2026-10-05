@@ -13,7 +13,7 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "BUILD_TESTING": "ON",
-        "ZK_SNARK_BUILD_EXAMPLES": "ON"
+        "TACIT_BUILD_EXAMPLES": "ON"
       }
     },
     {
@@ -28,14 +28,14 @@
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "ZK_SNARK_BUILD_BENCHMARKS": "ON"
+        "TACIT_BUILD_BENCHMARKS": "ON"
       }
     },
     {
       "name": "asan",
       "inherits": "debug",
       "cacheVariables": {
-        "ZK_SNARK_ENABLE_SANITIZERS": "ON"
+        "TACIT_ENABLE_SANITIZERS": "ON"
       }
     }
   ],

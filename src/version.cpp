@@ -1,9 +1,9 @@
-#include <zk_snark/version.hpp>
+#include <tacit/version.hpp>
 
-namespace zk_snark {
+namespace tacit {
 
 auto version() noexcept -> std::string_view {
-    return ZK_SNARK_VERSION;
+    return TACIT_VERSION;
 }
 
-} // namespace zk_snark
+} // namespace tacit

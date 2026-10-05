@@ -30,7 +30,7 @@ jobs:
         run: ctest --preset ${{ matrix.preset }}
       - name: Check benchmark harness
         if: matrix.preset == 'release'
-        run: ./build/release/benchmarks/zk_snark_bench --benchmark_min_time=0.01s
+        run: ./build/release/benchmarks/tacit_bench --benchmark_min_time=0.01s
 
   python:
     runs-on: ubuntu-24.04
@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: "3.13"
       - run: python -m pip install -e ".[dev]"
-      - run: python -c "import zk_snark_ref"
+      - run: python -c "import tacit_ref"
       - run: ruff check python
       - name: Run reference tests once added
         shell: bash
