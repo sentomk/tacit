@@ -16,6 +16,13 @@ Use Sage to verify primality, modular identities and exact root order.
 Write reproducible JSON into tests/vectors/ and later consume the same vectors
 from Python and C++ tests. Do not manually copy constants between implementations.
 
-SageMath is not part of the pip dependencies. Create the pinned environment from
-`environment.yml` (see the main README), then run the future script with
-`micromamba run -n sage sage scripts/generate_constants.sage`.
+SageMath is not part of the pip dependencies. It is pinned in `environment.yml`
+and installed from conda-forge with micromamba:
+
+```bash
+micromamba create -f environment.yml
+micromamba run -n sage sage scripts/generate_constants.sage
+```
+
+Generated vectors are committed under tests/vectors/, so building, testing and
+CI do not need Sage.
