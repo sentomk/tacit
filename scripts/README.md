@@ -26,3 +26,7 @@ micromamba run -n sage sage scripts/generate_constants.sage
 
 Generated vectors are committed under tests/vectors/, so building, testing and
 CI do not need Sage.
+
+The devcontainer ships micromamba but not Sage. Run the first command above once
+inside it; the environment is kept in the `tacit-micromamba` Docker volume, so it
+survives container rebuilds.

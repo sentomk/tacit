@@ -4,6 +4,9 @@
     "dockerfile": "Dockerfile"
   },
   "remoteUser": "dev",
+  "mounts": [
+    "source=tacit-micromamba,target=/home/dev/micromamba,type=volume"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
