@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tacit/field/prime_field.hpp>
+#include <tacit/field/quadratic_field.hpp>
 
 #include <array>
 
@@ -22,5 +23,8 @@ struct FrParams {
 
 using Fp = PrimeField<FpParams>;
 using Fr = PrimeField<FrParams>;
+
+// Coordinate field of G2 and the first level of the tower up to Fp12.
+using Fp2 = QuadraticField<Fp>;
 
 } // namespace tacit::bn254

@@ -140,7 +140,29 @@ TYPED_TEST(PrimeFieldTest, FromLimbsReducesWideInputs) {
 }
 
 // The whole interface is usable in constant expressions.
+using tacit::bn254::Fp;
+using tacit::bn254::Fp2;
 using tacit::bn254::Fr;
+
+constexpr Fp2 u{Fp::zero(), Fp::one()};
+constexpr Fp2 x{Fp::from_u64(3), Fp::from_u64(4)};
+
+static_assert(u * u == -Fp2::one());
+static_assert(u.square() == -Fp2::one());
+static_assert(x * x == x.square());
+static_assert(x * x.conjugate() == Fp2{Fp::from_u64(25), Fp::zero()});
+static_assert(x.norm() == Fp::from_u64(25));
+static_assert(x * Fp2::one() == x);
+static_assert((x + u) - u == x);
+
+// Scaling by one of the element's own coefficients.
+constexpr auto scaled_by_own_c0 = [] {
+  Fp2 y = x;
+  y *= y.c0;
+  return y;
+}();
+static_assert(scaled_by_own_c0 == Fp2{Fp::from_u64(9), Fp::from_u64(12)});
+
 static_assert(Fr{}.is_zero());
 static_assert(Fr::one() * Fr::one() == Fr::one());
 static_assert(Fr::from_u64(6) * Fr::from_u64(7) == Fr::from_u64(42));
