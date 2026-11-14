@@ -2,8 +2,6 @@
 
 namespace tacit {
 
-auto version() noexcept -> std::string_view {
-    return TACIT_VERSION;
-}
+auto version() noexcept -> std::string_view { return TACIT_VERSION; }
 
 } // namespace tacit
