@@ -1,20 +1,21 @@
-# Parameter generation (next P0 task)
+# Parameter generation
 
-Implement `generate_constants.sage` here as a separate learning step.
+`generate_constants.sage` derives the field constants for Ethereum BN254 and writes
+them to `tests/vectors/bn254_constants.json`.
 
-Start with Ethereum BN254 and explicitly distinguish:
+It covers two fields and keeps them explicitly apart:
 - Fp: base field for curve coordinates.
 - Fr: scalar field / circuit field.
 
-For each modulus, record the source and derive:
+For each modulus it records the source and derives:
 - 64-bit limb layout and limb count.
 - Montgomery R = 2^(64 * limb_count) mod p, R^2 mod p,
   and n0 = -p^(-1) mod 2^64.
-- Two-adicity and a root of exact order 2^s for the selected field.
+- Two-adicity and a root of exact order 2^s.
 
-Use Sage to verify primality, modular identities and exact root order.
-Write reproducible JSON into tests/vectors/ and later consume the same vectors
-from Python and C++ tests. Do not manually copy constants between implementations.
+Sage verifies primality, the modular identities and the exact root order. The JSON
+output is reproducible and is the single source for the Python and C++ tests. Do not
+manually copy constants between implementations.
 
 SageMath is not part of the pip dependencies. It is pinned in `environment.yml`
 and installed from conda-forge with micromamba:

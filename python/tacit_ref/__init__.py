@@ -1,4 +1,4 @@
-"""Independent reference models, to be implemented from P1.
+"""Independent reference models on plain Python integers.
 
-This package is not a binding to the C++ library yet.
+This package is not a binding to the C++ library.
 """

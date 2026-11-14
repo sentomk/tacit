@@ -1,7 +1,7 @@
 """Reference Montgomery arithmetic on plain Python integers.
 
-The word-by-word reduction follows the structure the C++ implementation will use,
-so it can serve as the oracle for limb-level tests later.
+The reduction runs word by word over 64-bit limbs, so it also serves as the oracle
+for limb-level tests of the C++ implementation.
 """
 
 LIMB_BITS = 64
