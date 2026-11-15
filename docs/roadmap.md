@@ -1,12 +1,12 @@
 # tacit · 项目 Roadmap
 
-> 一个用现代 C++ 从零实现的 zk-SNARK 库，底层追求极致性能（编译期参数化、汇编快路径、CUDA 加速），上层落地一个金融场景应用：交易所储备金证明（Proof of Reserves）。
+> 一个用现代 C++ 从零实现的 zk-SNARK 库，底层追求极致性能（编译期参数化、汇编快路径），上层落地一个金融场景应用：交易所储备金证明（Proof of Reserves）。
 
 ---
 
 ## 1. 项目定位
 
-- **技术目标**：现代 C++ 实现有限域、椭圆曲线、配对、NTT/MSM 与 Groth16，性能对标 arkworks、gnark、ICICLE。
+- **技术目标**：现代 C++ 实现有限域、椭圆曲线、配对、NTT/MSM 与 Groth16，性能对标 arkworks、gnark。
 - **生态位**：C++ 领域的 libff/libsnark 已长期不维护，现代 C++ 的 zk 库基本是空白。
 - **应用目标**：基于本库实现一个端到端的储备金证明系统，作为项目的金融场景落地和对外展示。
 
@@ -75,13 +75,12 @@
 **核心实现**
 - NTT
 - Pippenger MSM
-- CUDA 后端
 
 **正确性与兼容性**
 - Python NTT 参考实现，性质测试：NTT 后再逆 NTT 等于原多项式
 
 **文档与发布**
-- benchmark 套件设计，与 arkworks、gnark、ICICLE 做对比测试
+- benchmark 套件设计，与 arkworks、gnark 做对比测试
 - 结果图表与发布文章
 
 > 🚩 **第一次公开发布节点**：发布 benchmark 对比报告。
@@ -117,6 +116,7 @@
 ### 可选扩展
 
 - PLONK（通用 setup，无需每个电路单独 trusted setup）
+- CUDA 后端（NTT / MSM），与 ICICLE 做 GPU 性能对比
 - 更深入的 GPU 优化
 - 更多金融场景：合规证明（如证明交易对手不在制裁名单）、隐私信用评估（如证明收入高于门槛）
 
