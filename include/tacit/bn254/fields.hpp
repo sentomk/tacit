@@ -2,6 +2,7 @@
 
 #include <tacit/field/cubic_field.hpp>
 #include <tacit/field/prime_field.hpp>
+#include <tacit/field/quadratic_extension.hpp>
 #include <tacit/field/quadratic_field.hpp>
 
 #include <array>
@@ -51,5 +52,19 @@ private:
 
 // Second level of the tower up to Fp12.
 using Fp6 = CubicField<Fp6Params>;
+
+// Fp12 = Fp6[w] / (w^2 - v).
+struct Fp12Params {
+  using Base = Fp6;
+
+  static constexpr Fp6 nonresidue{Fp2::zero(), Fp2::one(), Fp2::zero()};
+
+  [[nodiscard]] static constexpr auto mul_by_nonresidue(const Fp6 &x) noexcept -> Fp6 {
+    return x.mul_by_v();
+  }
+};
+
+// Top of the tower. The pairing takes its values in this field.
+using Fp12 = QuadraticExtension<Fp12Params>;
 
 } // namespace tacit::bn254

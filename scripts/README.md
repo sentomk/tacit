@@ -33,7 +33,7 @@ above by the Python reference package:
 
 ```bash
 python -m tacit_ref.field_vectors   # bn254_field_ops.json: Fp and Fr
-python -m tacit_ref.tower_vectors   # bn254_tower_ops.json: Fp2 and Fp6
+python -m tacit_ref.tower_vectors   # bn254_tower_ops.json: Fp2, Fp6 and Fp12
 ```
 
 The devcontainer ships micromamba but not Sage. Run the first command above once

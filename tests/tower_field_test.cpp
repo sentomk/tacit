@@ -5,12 +5,14 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-// Checks BN254 Fp2 and Fp6 against tests/vectors/bn254_tower_ops.json, which the Python
+// Checks BN254 Fp2, Fp6 and Fp12 against tests/vectors/bn254_tower_ops.json, which the Python
 // reference model produces with schoolbook arithmetic.
 
 namespace {
 
 using tacit::bn254::Fp;
+using tacit::bn254::Fp12;
+using tacit::bn254::Fp12Params;
 using tacit::bn254::Fp2;
 using tacit::bn254::Fp6;
 using tacit::bn254::Fp6Params;
@@ -102,6 +104,41 @@ TEST(Bn254Fp6, ArithmeticMatchesVectors) {
   }
 }
 
+auto fp12(const nlohmann::json &value) -> Fp12 { return {fp6(value.at(0)), fp6(value.at(1))}; }
+
+TEST(Bn254Fp12, ArithmeticMatchesVectors) {
+  const auto ops = load_vectors("bn254_tower_ops.json").at("fp12").at("ops");
+  ASSERT_FALSE(ops.empty());
+
+  for (const auto &c : ops) {
+    SCOPED_TRACE("a = " + c.at("a").dump() + ", b = " + c.at("b").dump());
+    const Fp12 a = fp12(c.at("a"));
+    const Fp12 b = fp12(c.at("b"));
+
+    EXPECT_EQ(a + b, fp12(c.at("add")));
+    EXPECT_EQ(a - b, fp12(c.at("sub")));
+    EXPECT_EQ(a * b, fp12(c.at("mul")));
+    EXPECT_EQ(-a, fp12(c.at("neg_a")));
+    EXPECT_EQ(a.square(), fp12(c.at("square_a")));
+    EXPECT_EQ(a.conjugate(), fp12(c.at("conjugate_a")));
+    EXPECT_EQ(a * b.c0, fp12(c.at("a_scaled_by_b0")));
+
+    Fp12 acc = a;
+    acc += b;
+    EXPECT_EQ(acc, a + b);
+    acc -= b;
+    EXPECT_EQ(acc, a);
+    acc *= b;
+    EXPECT_EQ(acc, a * b);
+    acc = a;
+    acc *= acc;
+    EXPECT_EQ(acc, a.square());
+    acc = a;
+    acc *= acc.c1;
+    EXPECT_EQ(acc, a * a.c1);
+  }
+}
+
 // The interface is usable in constant expressions.
 
 constexpr Fp2 u{Fp::zero(), Fp::one()};
@@ -134,5 +171,18 @@ static_assert(y * y == y.square());
 static_assert(y.mul_by_v() == y * v);
 static_assert((y + v) - v == y);
 static_assert(y + (-y) == Fp6::zero());
+
+constexpr Fp12 w{Fp6::zero(), Fp6::one()};
+constexpr Fp12 z{y, y + v};
+
+static_assert(Fp12{}.is_zero());
+static_assert(Fp12Params::nonresidue == v);
+static_assert(w * w == Fp12{v, Fp6::zero()});
+static_assert(w.square() == Fp12{v, Fp6::zero()});
+static_assert(z * Fp12::one() == z);
+static_assert(z * z == z.square());
+static_assert((z * z.conjugate()).c1.is_zero());
+static_assert((z + w) - w == z);
+static_assert(z + (-z) == Fp12::zero());
 
 } // namespace

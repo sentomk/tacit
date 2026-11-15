@@ -4,7 +4,7 @@ import json
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
-from tacit_ref.tower import FP2_ONE, FP2_ZERO, Tower
+from tacit_ref.tower import FP2_ONE, FP2_ZERO, FP6_ONE, FP6_ZERO, Tower
 from tacit_ref.tower_vectors import OUTPUT, XI, build
 
 DATA = json.loads(OUTPUT.read_text())
@@ -14,7 +14,9 @@ TOWER = Tower(P, XI)
 coeff = st.integers(0, P - 1)
 fp2 = st.tuples(coeff, coeff)
 fp6 = st.tuples(fp2, fp2, fp2)
-FP6_ONE = (FP2_ONE, FP2_ZERO, FP2_ZERO)
+fp12 = st.tuples(fp6, fp6)
+V = (FP2_ZERO, FP2_ONE, FP2_ZERO)
+FP12_ONE = (FP6_ONE, FP6_ZERO)
 
 
 def test_committed_vectors_are_reproducible():
@@ -37,8 +39,19 @@ def test_xi_is_neither_a_square_nor_a_cube():
 
 
 def test_v_cubed_is_xi():
-    v = (FP2_ZERO, FP2_ONE, FP2_ZERO)
-    assert TOWER.fp6_mul(TOWER.fp6_mul(v, v), v) == (XI, FP2_ZERO, FP2_ZERO)
+    assert TOWER.fp6_mul(TOWER.fp6_mul(V, V), V) == (XI, FP2_ZERO, FP2_ZERO)
+
+
+def test_v_is_not_a_square_in_fp6():
+    # Fp6* is cyclic of order p^6 - 1, so v is a square exactly when v^((p^6 - 1) / 2) = 1.
+    order = P**6 - 1
+    assert TOWER.fp6_pow(V, order) == FP6_ONE
+    assert TOWER.fp6_pow(V, order // 2) != FP6_ONE
+
+
+def test_w_squared_is_v():
+    w = (FP6_ZERO, FP6_ONE)
+    assert TOWER.fp12_mul(w, w) == (V, FP6_ZERO)
 
 
 @settings(max_examples=50, deadline=None)
@@ -59,8 +72,21 @@ def test_fp6_ring_laws(a, b, c):
     assert mul(a, b) == mul(b, a)
     assert mul(mul(a, b), c) == mul(a, mul(b, c))
     assert mul(a, add(b, c)) == add(mul(a, b), mul(a, c))
-    assert TOWER.fp6_mul_by_v(a) == mul(a, (FP2_ZERO, FP2_ONE, FP2_ZERO))
+    assert TOWER.fp6_mul_by_v(a) == mul(a, V)
     assert TOWER.fp6_scale(a, b[0]) == mul(a, (b[0], FP2_ZERO, FP2_ZERO))
+
+
+@settings(max_examples=25, deadline=None)
+@given(a=fp12, b=fp12, c=fp12)
+def test_fp12_ring_laws(a, b, c):
+    mul, add = TOWER.fp12_mul, TOWER.fp12_add
+    assert mul(a, FP12_ONE) == a
+    assert mul(a, b) == mul(b, a)
+    assert mul(mul(a, b), c) == mul(a, mul(b, c))
+    assert mul(a, add(b, c)) == add(mul(a, b), mul(a, c))
+    assert TOWER.fp12_scale(a, b[0]) == mul(a, (b[0], FP6_ZERO))
+    # a * conjugate(a) lies in Fp6: its w coefficient vanishes.
+    assert mul(a, TOWER.fp12_conjugate(a))[1] == FP6_ZERO
 
 
 def test_vector_values_are_canonical():
@@ -74,7 +100,7 @@ def test_vector_values_are_canonical():
             for item in node.values():
                 yield from leaves(item)
 
-    for level in ("fp2", "fp6"):
+    for level in ("fp2", "fp6", "fp12"):
         values = list(leaves(DATA[level]))
         assert values
         assert all(0 <= int(v, 16) < P for v in values)

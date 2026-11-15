@@ -2,6 +2,7 @@
 
     Fp2 = Fp[u] / (u^2 + 1)      an element is a pair (c0, c1)
     Fp6 = Fp2[v] / (v^3 - xi)    an element is a triple of Fp2 elements
+    Fp12 = Fp6[w] / (w^2 - v)    an element is a pair of Fp6 elements
 
 Every product uses the schoolbook formula, so the results do not depend on the Karatsuba
 and Chung-Hasan formulas of the C++ implementation.
@@ -9,9 +10,12 @@ and Chung-Hasan formulas of the C++ implementation.
 
 Fp2 = tuple[int, int]
 Fp6 = tuple[Fp2, Fp2, Fp2]
+Fp12 = tuple[Fp6, Fp6]
 
 FP2_ZERO: Fp2 = (0, 0)
 FP2_ONE: Fp2 = (1, 0)
+FP6_ZERO: Fp6 = (FP2_ZERO, FP2_ZERO, FP2_ZERO)
+FP6_ONE: Fp6 = (FP2_ONE, FP2_ZERO, FP2_ZERO)
 
 
 class Tower:
@@ -78,3 +82,36 @@ class Tower:
 
     def fp6_mul_by_v(self, a: Fp6) -> Fp6:
         return (self.fp2_mul(self.xi, a[2]), a[0], a[1])
+
+    def fp6_pow(self, a: Fp6, e: int) -> Fp6:
+        result = FP6_ONE
+        while e:
+            if e & 1:
+                result = self.fp6_mul(result, a)
+            a = self.fp6_mul(a, a)
+            e >>= 1
+        return result
+
+    # Fp12
+
+    def fp12_add(self, a: Fp12, b: Fp12) -> Fp12:
+        return (self.fp6_add(a[0], b[0]), self.fp6_add(a[1], b[1]))
+
+    def fp12_sub(self, a: Fp12, b: Fp12) -> Fp12:
+        return (self.fp6_sub(a[0], b[0]), self.fp6_sub(a[1], b[1]))
+
+    def fp12_neg(self, a: Fp12) -> Fp12:
+        return (self.fp6_neg(a[0]), self.fp6_neg(a[1]))
+
+    def fp12_mul(self, a: Fp12, b: Fp12) -> Fp12:
+        # (a0 + a1 w)(b0 + b1 w) = (a0 b0 + v a1 b1) + (a0 b1 + a1 b0) w
+        return (
+            self.fp6_add(self.fp6_mul(a[0], b[0]), self.fp6_mul_by_v(self.fp6_mul(a[1], b[1]))),
+            self.fp6_add(self.fp6_mul(a[0], b[1]), self.fp6_mul(a[1], b[0])),
+        )
+
+    def fp12_conjugate(self, a: Fp12) -> Fp12:
+        return (a[0], self.fp6_neg(a[1]))
+
+    def fp12_scale(self, a: Fp12, s: Fp6) -> Fp12:
+        return (self.fp6_mul(a[0], s), self.fp6_mul(a[1], s))

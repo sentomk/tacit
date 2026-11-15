@@ -1,4 +1,4 @@
-"""Generate tests/vectors/bn254_tower_ops.json: test vectors for BN254 Fp2 and Fp6.
+"""Generate tests/vectors/bn254_tower_ops.json: test vectors for BN254 Fp2, Fp6 and Fp12.
 
 Expected values come from the schoolbook arithmetic in tacit_ref.tower. The base field
 modulus is read from tests/vectors/bn254_constants.json. The output is deterministic, so
@@ -11,7 +11,7 @@ import json
 import random
 from pathlib import Path
 
-from tacit_ref.tower import Fp2, Fp6, Tower
+from tacit_ref.tower import FP6_ONE, FP6_ZERO, Fp2, Fp6, Fp12, Tower
 
 VECTORS_DIR = Path(__file__).resolve().parents[2] / "tests" / "vectors"
 CONSTANTS = VECTORS_DIR / "bn254_constants.json"
@@ -21,6 +21,7 @@ SEED = "tacit/bn254/tower-ops/v1"
 XI: Fp2 = (9, 1)  # Fp6 = Fp2[v] / (v^3 - xi)
 RANDOM_FP2_CASES = 32
 RANDOM_FP6_CASES = 16
+RANDOM_FP12_CASES = 8
 
 
 def enc2(a: Fp2) -> list[str]:
@@ -29,6 +30,10 @@ def enc2(a: Fp2) -> list[str]:
 
 def enc6(a: Fp6) -> list[list[str]]:
     return [enc2(c) for c in a]
+
+
+def enc12(a: Fp12) -> list[list[list[str]]]:
+    return [enc6(c) for c in a]
 
 
 def fp2_vectors(tower: Tower, rng: random.Random) -> dict:
@@ -97,6 +102,42 @@ def fp6_vectors(tower: Tower, rng: random.Random) -> dict:
     }
 
 
+def fp12_vectors(tower: Tower, rng: random.Random) -> dict:
+    p = tower.p
+    top2 = (p - 1, p - 1)
+    top6 = (top2, top2, top2)
+    special = [
+        (FP6_ZERO, FP6_ZERO),
+        (FP6_ONE, FP6_ZERO),
+        (FP6_ZERO, FP6_ONE),  # w
+        (top6, top6),
+    ]
+
+    def rand6() -> Fp6:
+        return tuple((rng.randrange(p), rng.randrange(p)) for _ in range(3))
+
+    pairs = [(a, b) for a in special for b in special]
+    for _ in range(RANDOM_FP12_CASES):
+        pairs.append(((rand6(), rand6()), (rand6(), rand6())))
+
+    return {
+        "ops": [
+            {
+                "a": enc12(a),
+                "b": enc12(b),
+                "add": enc12(tower.fp12_add(a, b)),
+                "sub": enc12(tower.fp12_sub(a, b)),
+                "mul": enc12(tower.fp12_mul(a, b)),
+                "neg_a": enc12(tower.fp12_neg(a)),
+                "square_a": enc12(tower.fp12_mul(a, a)),
+                "conjugate_a": enc12(tower.fp12_conjugate(a)),
+                "a_scaled_by_b0": enc12(tower.fp12_scale(a, b[0])),
+            }
+            for a, b in pairs
+        ],
+    }
+
+
 def build() -> dict:
     constants = json.loads(CONSTANTS.read_text())
     p = int(constants["fields"]["Fp"]["modulus"], 16)
@@ -107,6 +148,7 @@ def build() -> dict:
         "modulus": hex(p),
         "fp2": fp2_vectors(tower, random.Random(f"{SEED}/fp2")),
         "fp6": fp6_vectors(tower, random.Random(f"{SEED}/fp6")),
+        "fp12": fp12_vectors(tower, random.Random(f"{SEED}/fp12")),
     }
 
 

@@ -11,6 +11,7 @@ namespace {
 
 using tacit::u64;
 using tacit::bn254::Fp;
+using tacit::bn254::Fp12;
 using tacit::bn254::Fp2;
 using tacit::bn254::Fp6;
 using tacit::bn254::Fr;
@@ -36,6 +37,12 @@ template <> struct Sample<Fp6> {
   static auto make(u64 seed) -> Fp6 {
     return {Sample<Fp2>::make(3 * seed), Sample<Fp2>::make(3 * seed + 1),
             Sample<Fp2>::make(3 * seed + 2)};
+  }
+};
+
+template <> struct Sample<Fp12> {
+  static auto make(u64 seed) -> Fp12 {
+    return {Sample<Fp6>::make(2 * seed), Sample<Fp6>::make(2 * seed + 1)};
   }
 };
 
@@ -92,5 +99,8 @@ BENCHMARK(BM_Square<Fp2>)->Name("bn254/Fp2/square");
 BENCHMARK(BM_Add<Fp6>)->Name("bn254/Fp6/add");
 BENCHMARK(BM_Mul<Fp6>)->Name("bn254/Fp6/mul");
 BENCHMARK(BM_Square<Fp6>)->Name("bn254/Fp6/square");
+BENCHMARK(BM_Add<Fp12>)->Name("bn254/Fp12/add");
+BENCHMARK(BM_Mul<Fp12>)->Name("bn254/Fp12/mul");
+BENCHMARK(BM_Square<Fp12>)->Name("bn254/Fp12/square");
 
 } // namespace
