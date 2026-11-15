@@ -34,6 +34,16 @@ above by the Python reference package:
 ```bash
 python -m tacit_ref.field_vectors   # bn254_field_ops.json: Fp and Fr
 python -m tacit_ref.tower_vectors   # bn254_tower_ops.json: Fp2, Fp6 and Fp12
+python -m tacit_ref.g1_vectors      # bn254_g1_ops.json: G1
+```
+
+`tests/vectors/bn254_g1_eip196.json` holds the EIP-196 precompile tests from go-ethereum,
+decoded into points and scalars. The file records the go-ethereum commit it comes from.
+To refresh it, download `bn256Add.json` and `bn256ScalarMul.json` from that commit's
+`core/vm/testdata/precompiles` and run:
+
+```bash
+python -m tacit_ref.eip196_vectors bn256Add.json bn256ScalarMul.json
 ```
 
 The devcontainer ships micromamba but not Sage. Run the first command above once
