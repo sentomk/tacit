@@ -16,6 +16,7 @@ using tacit::bn254::Fp12Params;
 using tacit::bn254::Fp2;
 using tacit::bn254::Fp6;
 using tacit::bn254::Fp6Params;
+using tacit::test::expect_inverse;
 using tacit::test::hex;
 using tacit::test::load_vectors;
 
@@ -41,6 +42,7 @@ TEST(Bn254Fp2, ArithmeticMatchesVectors) {
     EXPECT_EQ(a * b, fp2(c.at("mul")));
     EXPECT_EQ(-a, fp2(c.at("neg_a")));
     EXPECT_EQ(a.square(), fp2(c.at("square_a")));
+    expect_inverse(a, c.at("inverse_a"), fp2);
     EXPECT_EQ(a.conjugate(), fp2(c.at("conjugate_a")));
     EXPECT_EQ(a.norm(), fp(c.at("norm_a")));
     EXPECT_EQ(a * b.c0, fp2(c.at("a_scaled_by_b0")));
@@ -85,6 +87,7 @@ TEST(Bn254Fp6, ArithmeticMatchesVectors) {
     EXPECT_EQ(a * b, fp6(c.at("mul")));
     EXPECT_EQ(-a, fp6(c.at("neg_a")));
     EXPECT_EQ(a.square(), fp6(c.at("square_a")));
+    expect_inverse(a, c.at("inverse_a"), fp6);
     EXPECT_EQ(a * b.c0, fp6(c.at("a_scaled_by_b0")));
     EXPECT_EQ(a.mul_by_v(), fp6(c.at("a_times_v")));
 
@@ -120,6 +123,7 @@ TEST(Bn254Fp12, ArithmeticMatchesVectors) {
     EXPECT_EQ(a * b, fp12(c.at("mul")));
     EXPECT_EQ(-a, fp12(c.at("neg_a")));
     EXPECT_EQ(a.square(), fp12(c.at("square_a")));
+    expect_inverse(a, c.at("inverse_a"), fp12);
     EXPECT_EQ(a.conjugate(), fp12(c.at("conjugate_a")));
     EXPECT_EQ(a * b.c0, fp12(c.at("a_scaled_by_b0")));
 
@@ -184,5 +188,14 @@ static_assert(z * z == z.square());
 static_assert((z * z.conjugate()).c1.is_zero());
 static_assert((z + w) - w == z);
 static_assert(z + (-z) == Fp12::zero());
+
+// Inverses through the whole tower.
+static_assert(x * x.inverse().value() == Fp2::one());
+static_assert(y * y.inverse().value() == Fp6::one());
+static_assert(z * z.inverse().value() == Fp12::one());
+static_assert(u.inverse() == -u);
+static_assert(!Fp2::zero().inverse().has_value());
+static_assert(!Fp6::zero().inverse().has_value());
+static_assert(!Fp12::zero().inverse().has_value());
 
 } // namespace

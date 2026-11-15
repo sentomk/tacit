@@ -2,6 +2,8 @@
 
 #include <tacit/field/prime_field.hpp>
 
+#include <optional>
+
 // Quadratic extension Base[u] / (u^2 + 1). An element is c0 + c1 * u.
 
 namespace tacit {
@@ -70,6 +72,15 @@ public:
 
   // c0^2 + c1^2, an element of the base field.
   [[nodiscard]] constexpr auto norm() const noexcept -> Base { return c0.square() + c1.square(); }
+
+  // The multiplicative inverse, or nothing for zero: conjugate / norm.
+  [[nodiscard]] constexpr auto inverse() const noexcept -> std::optional<QuadraticField> {
+    const auto norm_inverse = norm().inverse();
+    if (!norm_inverse) {
+      return std::nullopt;
+    }
+    return QuadraticField{c0 * *norm_inverse, -(c1 * *norm_inverse)};
+  }
 
   [[nodiscard]] constexpr auto operator-() const noexcept -> QuadraticField { return {-c0, -c1}; }
 

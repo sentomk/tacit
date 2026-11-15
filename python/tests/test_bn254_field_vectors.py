@@ -22,7 +22,7 @@ def test_ops_cover_edges_and_stay_canonical(name):
 
     assert {(0, 0), (p - 1, p - 1), (p - 1, 1), (0, p - 1)} <= inputs
     for case in field["ops"]:
-        assert all(0 <= int(v, 16) < p for v in case.values())
+        assert all(0 <= int(v, 16) < p for v in case.values() if v is not None)
 
 
 @pytest.mark.parametrize("name", FIELDS)
@@ -46,3 +46,29 @@ def test_reduce_inputs_are_not_canonical(name):
         value = int(case["value"], 16)
         assert p <= value < 1 << 256
         assert int(case["reduced"], 16) == value % p
+
+
+@pytest.mark.parametrize("name", FIELDS)
+def test_inverses_multiply_back_to_one(name):
+    field = DATA["fields"][name]
+    p = int(field["modulus"], 16)
+
+    for case in field["ops"]:
+        a = int(case["a"], 16)
+        if a == 0:
+            assert case["inverse_a"] is None
+        else:
+            assert a * int(case["inverse_a"], 16) % p == 1
+
+
+@pytest.mark.parametrize("name", FIELDS)
+def test_pow_cases(name):
+    field = DATA["fields"][name]
+    p = int(field["modulus"], 16)
+    exponents = {int(c["exponent"], 16) for c in field["pow"]}
+
+    assert {0, 1, 2, p - 2, p - 1, (1 << 256) - 1} <= exponents
+    for case in field["pow"]:
+        base, exponent = int(case["base"], 16), int(case["exponent"], 16)
+        assert 0 <= base < p and 0 <= exponent < 1 << 256
+        assert int(case["result"], 16) == pow(base, exponent, p)

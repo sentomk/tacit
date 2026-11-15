@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 // Quadratic extension Base[w] / (w^2 - beta) for a general non-residue beta. An element is
 // c0 + c1 * w. QuadraticField in quadratic_field.hpp covers the special case beta = -1 over
 // a prime field with shorter formulas.
@@ -78,6 +80,15 @@ public:
   // c0 - c1 w, the image under the non-trivial automorphism over the base field.
   [[nodiscard]] constexpr auto conjugate() const noexcept -> QuadraticExtension {
     return {c0, -c1};
+  }
+
+  // The multiplicative inverse, or nothing for zero: conjugate / (a0^2 - beta a1^2).
+  [[nodiscard]] constexpr auto inverse() const noexcept -> std::optional<QuadraticExtension> {
+    const auto d_inverse = (c0.square() - beta(c1.square())).inverse();
+    if (!d_inverse) {
+      return std::nullopt;
+    }
+    return QuadraticExtension{c0 * *d_inverse, -(c1 * *d_inverse)};
   }
 
   [[nodiscard]] constexpr auto operator-() const noexcept -> QuadraticExtension {

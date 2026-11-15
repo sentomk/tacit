@@ -2,6 +2,7 @@
 
 #include <tacit/limbs.hpp>
 
+#include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
 #include <array>
@@ -52,6 +53,20 @@ inline auto parse_hex(std::string_view text) -> Limbs {
 
 inline auto hex(const nlohmann::json &value) -> Limbs {
   return parse_hex(value.get<std::string>());
+}
+
+// Checks a.inverse() against a vector entry, where JSON null stands for "no inverse".
+template <typename Field, typename Parse>
+auto expect_inverse(const Field &a, const nlohmann::json &expected, Parse parse) -> void {
+  const auto inverse = a.inverse();
+  if (expected.is_null()) {
+    EXPECT_TRUE(a.is_zero());
+    EXPECT_FALSE(inverse.has_value());
+    return;
+  }
+  ASSERT_TRUE(inverse.has_value());
+  EXPECT_EQ(*inverse, parse(expected));
+  EXPECT_EQ(a * *inverse, Field::one());
 }
 
 } // namespace tacit::test

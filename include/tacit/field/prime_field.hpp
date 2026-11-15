@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cstddef>
+#include <optional>
 
 // Prime field arithmetic in Montgomery form, parameterized at compile time.
 //
@@ -90,6 +91,15 @@ template <std::size_t N>
   return t;
 }
 
+// p - 2 for p >= 3.
+template <std::size_t N>
+[[nodiscard]] constexpr auto minus_two(std::array<u64, N> p) noexcept -> std::array<u64, N> {
+  std::array<u64, N> two{};
+  two[0] = 2;
+  static_cast<void>(limbs::sub_assign(p, two));
+  return p;
+}
+
 } // namespace detail
 
 template <typename Params> class PrimeField {
@@ -104,6 +114,8 @@ public:
   static constexpr Limbs r = detail::pow2_mod(modulus, 64 * limb_count);
   // R^2 mod modulus
   static constexpr Limbs r2 = detail::pow2_mod(modulus, 128 * limb_count);
+  // modulus - 2, the exponent that inverts a non-zero element (Fermat's little theorem).
+  static constexpr Limbs modulus_minus_two = detail::minus_two(modulus);
 
   static_assert((modulus[0] & 1U) == 1U, "modulus must be odd");
   static_assert(modulus[limb_count - 1] != 0, "top limb of the modulus must be non-zero");
@@ -158,6 +170,30 @@ public:
   }
 
   [[nodiscard]] constexpr auto square() const noexcept -> PrimeField { return *this * *this; }
+
+  // this^exponent, with the exponent given as little-endian limbs. The zeroth power is one.
+  template <std::size_t M>
+  [[nodiscard]] constexpr auto pow(const std::array<u64, M> &exponent) const noexcept
+      -> PrimeField {
+    PrimeField result = one();
+    for (std::size_t i = M; i-- > 0;) {
+      for (int bit = 63; bit >= 0; --bit) {
+        result = result.square();
+        if (((exponent[i] >> bit) & 1U) != 0) {
+          result *= *this;
+        }
+      }
+    }
+    return result;
+  }
+
+  // The multiplicative inverse, or nothing for zero. Computed as this^(modulus - 2).
+  [[nodiscard]] constexpr auto inverse() const noexcept -> std::optional<PrimeField> {
+    if (is_zero()) {
+      return std::nullopt;
+    }
+    return pow(modulus_minus_two);
+  }
 
   [[nodiscard]] constexpr auto operator-() const noexcept -> PrimeField {
     return PrimeField{} - *this;

@@ -36,6 +36,10 @@ def enc12(a: Fp12) -> list[list[list[str]]]:
     return [enc6(c) for c in a]
 
 
+def optional(encode, value):
+    return None if value is None else encode(value)
+
+
 def fp2_vectors(tower: Tower, rng: random.Random) -> dict:
     p = tower.p
     special = [(0, 0), (1, 0), (0, 1), (p - 1, 0), (p - 1, p - 1)]
@@ -55,6 +59,7 @@ def fp2_vectors(tower: Tower, rng: random.Random) -> dict:
                 "mul": enc2(tower.fp2_mul(a, b)),
                 "neg_a": enc2(tower.fp2_neg(a)),
                 "square_a": enc2(tower.fp2_mul(a, a)),
+                "inverse_a": optional(enc2, tower.fp2_inv(a)),
                 "conjugate_a": enc2(tower.fp2_conjugate(a)),
                 "norm_a": hex(tower.fp2_norm(a)),
                 "a_scaled_by_b0": enc2(tower.fp2_mul(a, (b[0], 0))),
@@ -94,6 +99,7 @@ def fp6_vectors(tower: Tower, rng: random.Random) -> dict:
                 "mul": enc6(tower.fp6_mul(a, b)),
                 "neg_a": enc6(tower.fp6_neg(a)),
                 "square_a": enc6(tower.fp6_mul(a, a)),
+                "inverse_a": optional(enc6, tower.fp6_inv(a)),
                 "a_scaled_by_b0": enc6(tower.fp6_scale(a, b[0])),
                 "a_times_v": enc6(tower.fp6_mul_by_v(a)),
             }
@@ -130,6 +136,7 @@ def fp12_vectors(tower: Tower, rng: random.Random) -> dict:
                 "mul": enc12(tower.fp12_mul(a, b)),
                 "neg_a": enc12(tower.fp12_neg(a)),
                 "square_a": enc12(tower.fp12_mul(a, a)),
+                "inverse_a": optional(enc12, tower.fp12_inv(a)),
                 "conjugate_a": enc12(tower.fp12_conjugate(a)),
                 "a_scaled_by_b0": enc12(tower.fp12_scale(a, b[0])),
             }

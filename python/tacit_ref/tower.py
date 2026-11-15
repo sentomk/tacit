@@ -5,7 +5,8 @@
     Fp12 = Fp6[w] / (w^2 - v)    an element is a pair of Fp6 elements
 
 Every product uses the schoolbook formula, so the results do not depend on the Karatsuba
-and Chung-Hasan formulas of the C++ implementation.
+and Chung-Hasan formulas of the C++ implementation. Inverses return None for zero; the
+tests confirm each one by multiplying it back.
 """
 
 Fp2 = tuple[int, int]
@@ -45,6 +46,13 @@ class Tower:
     def fp2_norm(self, a: Fp2) -> int:
         return (a[0] * a[0] + a[1] * a[1]) % self.p
 
+    def fp2_inv(self, a: Fp2) -> Fp2 | None:
+        norm = self.fp2_norm(a)
+        if norm == 0:
+            return None
+        norm_inv = pow(norm, -1, self.p)
+        return (a[0] * norm_inv % self.p, -a[1] * norm_inv % self.p)
+
     def fp2_pow(self, a: Fp2, e: int) -> Fp2:
         result = FP2_ONE
         while e:
@@ -83,6 +91,18 @@ class Tower:
     def fp6_mul_by_v(self, a: Fp6) -> Fp6:
         return (self.fp2_mul(self.xi, a[2]), a[0], a[1])
 
+    def fp6_inv(self, a: Fp6) -> Fp6 | None:
+        mul, sub, xi = self.fp2_mul, self.fp2_sub, self.xi
+        a0, a1, a2 = a
+        t0 = sub(mul(a0, a0), mul(xi, mul(a1, a2)))
+        t1 = sub(mul(xi, mul(a2, a2)), mul(a0, a1))
+        t2 = sub(mul(a1, a1), mul(a0, a2))
+        d = self.fp2_add(mul(a0, t0), mul(xi, self.fp2_add(mul(a2, t1), mul(a1, t2))))
+        d_inv = self.fp2_inv(d)
+        if d_inv is None:
+            return None
+        return (mul(t0, d_inv), mul(t1, d_inv), mul(t2, d_inv))
+
     def fp6_pow(self, a: Fp6, e: int) -> Fp6:
         result = FP6_ONE
         while e:
@@ -115,3 +135,11 @@ class Tower:
 
     def fp12_scale(self, a: Fp12, s: Fp6) -> Fp12:
         return (self.fp6_mul(a[0], s), self.fp6_mul(a[1], s))
+
+    def fp12_inv(self, a: Fp12) -> Fp12 | None:
+        # 1 / (a0 + a1 w) = (a0 - a1 w) / (a0^2 - v a1^2)
+        d = self.fp6_sub(self.fp6_mul(a[0], a[0]), self.fp6_mul_by_v(self.fp6_mul(a[1], a[1])))
+        d_inv = self.fp6_inv(d)
+        if d_inv is None:
+            return None
+        return (self.fp6_mul(a[0], d_inv), self.fp6_neg(self.fp6_mul(a[1], d_inv)))

@@ -2,7 +2,7 @@
 
 import json
 
-from hypothesis import given, settings
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from tacit_ref.tower import FP2_ONE, FP2_ZERO, FP6_ONE, FP6_ZERO, Tower
 from tacit_ref.tower_vectors import OUTPUT, XI, build
@@ -87,6 +87,30 @@ def test_fp12_ring_laws(a, b, c):
     assert TOWER.fp12_scale(a, b[0]) == mul(a, (b[0], FP6_ZERO))
     # a * conjugate(a) lies in Fp6: its w coefficient vanishes.
     assert mul(a, TOWER.fp12_conjugate(a))[1] == FP6_ZERO
+
+
+@settings(max_examples=50, deadline=None)
+@given(a=fp2, b=fp6, c=fp12)
+def test_inverses_multiply_back_to_one(a, b, c):
+    assume(a != FP2_ZERO and b != FP6_ZERO and c != (FP6_ZERO, FP6_ZERO))
+    assert TOWER.fp2_mul(a, TOWER.fp2_inv(a)) == FP2_ONE
+    assert TOWER.fp6_mul(b, TOWER.fp6_inv(b)) == FP6_ONE
+    assert TOWER.fp12_mul(c, TOWER.fp12_inv(c)) == FP12_ONE
+
+
+def test_zero_has_no_inverse():
+    assert TOWER.fp2_inv(FP2_ZERO) is None
+    assert TOWER.fp6_inv(FP6_ZERO) is None
+    assert TOWER.fp12_inv((FP6_ZERO, FP6_ZERO)) is None
+
+
+def test_vector_inverses_are_null_only_for_zero():
+    for level, zero in (("fp2", ["0x0"] * 2), ("fp6", [["0x0"] * 2] * 3)):
+        for case in DATA[level]["ops"]:
+            assert (case["inverse_a"] is None) == (case["a"] == zero)
+    zero12 = [[["0x0"] * 2] * 3] * 2
+    for case in DATA["fp12"]["ops"]:
+        assert (case["inverse_a"] is None) == (case["a"] == zero12)
 
 
 def test_vector_values_are_canonical():

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 // Cubic extension Base[v] / (v^3 - xi). An element is c0 + c1 * v + c2 * v^2.
 //
 // The parameter type names the base field and the cubic non-residue xi:
@@ -93,6 +95,21 @@ public:
 
   // Multiplication by v: (c0 + c1 v + c2 v^2) v = xi c2 + c0 v + c1 v^2.
   [[nodiscard]] constexpr auto mul_by_v() const noexcept -> CubicField { return {xi(c2), c0, c1}; }
+
+  // The multiplicative inverse, or nothing for zero. With
+  //   t0 = a0^2 - xi a1 a2,  t1 = xi a2^2 - a0 a1,  t2 = a1^2 - a0 a2,
+  // the norm down to the base field is d = a0 t0 + xi (a2 t1 + a1 t2), and the inverse is
+  // (t0 + t1 v + t2 v^2) / d.
+  [[nodiscard]] constexpr auto inverse() const noexcept -> std::optional<CubicField> {
+    const Base t0 = c0.square() - xi(c1 * c2);
+    const Base t1 = xi(c2.square()) - c0 * c1;
+    const Base t2 = c1.square() - c0 * c2;
+    const auto d_inverse = (c0 * t0 + xi(c2 * t1 + c1 * t2)).inverse();
+    if (!d_inverse) {
+      return std::nullopt;
+    }
+    return CubicField{t0 * *d_inverse, t1 * *d_inverse, t2 * *d_inverse};
+  }
 
   [[nodiscard]] constexpr auto operator-() const noexcept -> CubicField { return {-c0, -c1, -c2}; }
 

@@ -85,22 +85,36 @@ template <typename Field> void BM_Square(benchmark::State &state) {
   }
 }
 
+// Every value in the chain is non-zero: the inverse of a non-zero element is non-zero.
+template <typename Field> void BM_Inverse(benchmark::State &state) {
+  auto [x, y] = operands<Field>();
+  for (auto _ : state) {
+    x = *x.inverse();
+    benchmark::DoNotOptimize(x);
+  }
+}
+
 BENCHMARK(BM_Add<Fp>)->Name("bn254/Fp/add");
 BENCHMARK(BM_Sub<Fp>)->Name("bn254/Fp/sub");
 BENCHMARK(BM_Mul<Fp>)->Name("bn254/Fp/mul");
 BENCHMARK(BM_Square<Fp>)->Name("bn254/Fp/square");
+BENCHMARK(BM_Inverse<Fp>)->Name("bn254/Fp/inverse");
 BENCHMARK(BM_Add<Fr>)->Name("bn254/Fr/add");
 BENCHMARK(BM_Sub<Fr>)->Name("bn254/Fr/sub");
 BENCHMARK(BM_Mul<Fr>)->Name("bn254/Fr/mul");
 BENCHMARK(BM_Square<Fr>)->Name("bn254/Fr/square");
+BENCHMARK(BM_Inverse<Fr>)->Name("bn254/Fr/inverse");
 BENCHMARK(BM_Add<Fp2>)->Name("bn254/Fp2/add");
 BENCHMARK(BM_Mul<Fp2>)->Name("bn254/Fp2/mul");
 BENCHMARK(BM_Square<Fp2>)->Name("bn254/Fp2/square");
+BENCHMARK(BM_Inverse<Fp2>)->Name("bn254/Fp2/inverse");
 BENCHMARK(BM_Add<Fp6>)->Name("bn254/Fp6/add");
 BENCHMARK(BM_Mul<Fp6>)->Name("bn254/Fp6/mul");
 BENCHMARK(BM_Square<Fp6>)->Name("bn254/Fp6/square");
+BENCHMARK(BM_Inverse<Fp6>)->Name("bn254/Fp6/inverse");
 BENCHMARK(BM_Add<Fp12>)->Name("bn254/Fp12/add");
 BENCHMARK(BM_Mul<Fp12>)->Name("bn254/Fp12/mul");
 BENCHMARK(BM_Square<Fp12>)->Name("bn254/Fp12/square");
+BENCHMARK(BM_Inverse<Fp12>)->Name("bn254/Fp12/inverse");
 
 } // namespace

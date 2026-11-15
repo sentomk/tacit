@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include <array>
 #include <cstddef>
 #include <string>
 
@@ -13,6 +14,7 @@
 
 namespace {
 
+using tacit::test::expect_inverse;
 using tacit::test::hex;
 using tacit::test::Limbs;
 using tacit::test::load_vectors;
@@ -80,6 +82,8 @@ TYPED_TEST(PrimeFieldTest, ArithmeticMatchesVectors) {
     EXPECT_EQ((a * b).to_limbs(), hex(c.at("mul")));
     EXPECT_EQ((-a).to_limbs(), hex(c.at("neg_a")));
     EXPECT_EQ(a.square().to_limbs(), hex(c.at("square_a")));
+    expect_inverse(a, c.at("inverse_a"),
+                   [](const nlohmann::json &j) { return Field::from_limbs(hex(j)); });
 
     Field acc = a;
     acc += b;
@@ -88,6 +92,20 @@ TYPED_TEST(PrimeFieldTest, ArithmeticMatchesVectors) {
     EXPECT_EQ(acc, a);
     acc *= b;
     EXPECT_EQ(acc, a * b);
+  }
+}
+
+TYPED_TEST(PrimeFieldTest, PowMatchesVectors) {
+  using Field = typename TypeParam::Field;
+  const auto cases =
+      load_vectors("bn254_field_ops.json").at("fields").at(TypeParam::name).at("pow");
+  ASSERT_FALSE(cases.empty());
+
+  for (const auto &c : cases) {
+    SCOPED_TRACE("base = " + c.at("base").template get<std::string>() +
+                 ", exponent = " + c.at("exponent").template get<std::string>());
+    const Field base = Field::from_limbs(hex(c.at("base")));
+    EXPECT_EQ(base.pow(hex(c.at("exponent"))).to_limbs(), hex(c.at("result")));
   }
 }
 
@@ -112,5 +130,9 @@ static_assert(Fr::from_u64(6) * Fr::from_u64(7) == Fr::from_u64(42));
 static_assert(Fr::from_u64(5) - Fr::from_u64(7) == -Fr::from_u64(2));
 static_assert((-Fr::one()).square() == Fr::one());
 static_assert(Fr::from_limbs(Fr::modulus).is_zero());
+static_assert(Fr::from_u64(3).pow(std::array<tacit::u64, 1>{4}) == Fr::from_u64(81));
+static_assert(Fr::from_u64(2).inverse().value() * Fr::from_u64(2) == Fr::one());
+static_assert(Fr::one().inverse() == Fr::one());
+static_assert(!Fr::zero().inverse().has_value());
 
 } // namespace
