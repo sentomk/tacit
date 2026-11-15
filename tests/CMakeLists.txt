@@ -1,4 +1,4 @@
-add_executable(tacit_tests version_test.cpp prime_field_test.cpp)
+add_executable(tacit_tests version_test.cpp prime_field_test.cpp tower_field_test.cpp)
 target_link_libraries(tacit_tests PRIVATE
     tacit::tacit GTest::gtest_main nlohmann_json::nlohmann_json)
 target_compile_definitions(tacit_tests PRIVATE

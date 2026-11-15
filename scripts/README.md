@@ -28,11 +28,12 @@ micromamba run -n sage sage scripts/generate_constants.sage
 Generated vectors are committed under tests/vectors/, so building, testing and
 CI do not need Sage.
 
-The field arithmetic vectors in `tests/vectors/bn254_field_ops.json` do not need Sage.
-They are produced from the constants above by the Python reference package:
+The field arithmetic vectors do not need Sage. They are produced from the constants
+above by the Python reference package:
 
 ```bash
-python -m tacit_ref.field_vectors
+python -m tacit_ref.field_vectors   # bn254_field_ops.json: Fp and Fr
+python -m tacit_ref.tower_vectors   # bn254_tower_ops.json: Fp2 and Fp6
 ```
 
 The devcontainer ships micromamba but not Sage. Run the first command above once

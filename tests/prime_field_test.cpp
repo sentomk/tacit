@@ -1,57 +1,21 @@
+#include "test_vectors.hpp"
+
 #include <tacit/bn254/fields.hpp>
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include <array>
 #include <cstddef>
-#include <fstream>
-#include <stdexcept>
 #include <string>
-#include <string_view>
 
 // Checks the BN254 prime fields against the vectors in tests/vectors, which are produced by
 // the Sage script and the Python reference models.
 
 namespace {
 
-using tacit::u64;
-using Limbs = std::array<u64, 4>;
-
-auto load_vectors(const std::string &file) -> nlohmann::json {
-  const std::string path = std::string{TACIT_VECTORS_DIR} + "/" + file;
-  std::ifstream in{path};
-  if (!in) {
-    throw std::runtime_error{"cannot open " + path};
-  }
-  return nlohmann::json::parse(in);
-}
-
-// Parses "0x..." (lowercase, at most 64 digits) into little-endian limbs.
-auto parse_hex(std::string_view text) -> Limbs {
-  if (text.substr(0, 2) != "0x" || text.size() < 3 || text.size() > 66) {
-    throw std::invalid_argument{"bad hex literal: " + std::string{text}};
-  }
-  text.remove_prefix(2);
-
-  Limbs out{};
-  std::size_t bit = 0;
-  for (auto it = text.rbegin(); it != text.rend(); ++it, bit += 4) {
-    const char c = *it;
-    u64 digit = 0;
-    if (c >= '0' && c <= '9') {
-      digit = static_cast<u64>(c - '0');
-    } else if (c >= 'a' && c <= 'f') {
-      digit = static_cast<u64>(c - 'a' + 10);
-    } else {
-      throw std::invalid_argument{"bad hex digit in: " + std::string{text}};
-    }
-    out.at(bit / 64) |= digit << (bit % 64);
-  }
-  return out;
-}
-
-auto hex(const nlohmann::json &value) -> Limbs { return parse_hex(value.get<std::string>()); }
+using tacit::test::hex;
+using tacit::test::Limbs;
+using tacit::test::load_vectors;
 
 struct FpCase {
   using Field = tacit::bn254::Fp;
@@ -140,28 +104,7 @@ TYPED_TEST(PrimeFieldTest, FromLimbsReducesWideInputs) {
 }
 
 // The whole interface is usable in constant expressions.
-using tacit::bn254::Fp;
-using tacit::bn254::Fp2;
 using tacit::bn254::Fr;
-
-constexpr Fp2 u{Fp::zero(), Fp::one()};
-constexpr Fp2 x{Fp::from_u64(3), Fp::from_u64(4)};
-
-static_assert(u * u == -Fp2::one());
-static_assert(u.square() == -Fp2::one());
-static_assert(x * x == x.square());
-static_assert(x * x.conjugate() == Fp2{Fp::from_u64(25), Fp::zero()});
-static_assert(x.norm() == Fp::from_u64(25));
-static_assert(x * Fp2::one() == x);
-static_assert((x + u) - u == x);
-
-// Scaling by one of the element's own coefficients.
-constexpr auto scaled_by_own_c0 = [] {
-  Fp2 y = x;
-  y *= y.c0;
-  return y;
-}();
-static_assert(scaled_by_own_c0 == Fp2{Fp::from_u64(9), Fp::from_u64(12)});
 
 static_assert(Fr{}.is_zero());
 static_assert(Fr::one() * Fr::one() == Fr::one());
